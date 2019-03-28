@@ -2,9 +2,13 @@
 
 ## Getting started
 
-Create forks of all the Spinnaker microservices on GitHub, and clone them locally to ~/code/spinnaker:
+Create forks of all the Spinnaker microservices on GitHub:
 
 https://www.spinnaker.io/reference/architecture/#spinnaker-microservices
+
+Clone them onto your laptop:
+
+```./clone.sh {your github user} ~/code/spinnaker```
 
 Set up IntelliJ:
 
