@@ -1,6 +1,17 @@
 # Set up a Spinnaker ECS plugin development environment
 
-## Getting started
+<!-- toc -->
+
+- [Laptop](#configure-laptop)
+- [Deployment Region](#configure-deployment-region)
+- [Development Region](#configure-development-region)
+- [Development Instance](#configure-development-ec2-instance)
+- [Test Changes](#test-spinnaker-code-changes)
+- [Sync From Upstream](#regularly-sync-from-upstream)
+
+<!-- tocstop -->
+
+## Configure laptop
 
 Create forks of all the Spinnaker microservices on GitHub:
 
