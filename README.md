@@ -139,3 +139,16 @@ cd ~/dev/spinnaker/logs
 ```
 
 Test your changes manually at http://localhost:9000.
+
+## Regularly sync from upstream
+
+Add the following to your laptop's .bashrc file
+```
+sync-from-upstream() {
+    for i in ./*; do
+        (cd $i && echo $i && git checkout master && git pull --rebase upstream master && git push origin upstream/master:master)
+    done
+}
+```
+
+Then regularly run `sync-from-upstream` in ~/code/spinnaker to keep your local repos and GitHub forks in sync with upstream Spinnaker.
