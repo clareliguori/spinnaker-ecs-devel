@@ -13,6 +13,11 @@ Mappings:
     PrivateTwo:
       CIDR: '10.0.192.0/18'
 Resources:
+  Repo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: 'spinnaker-deployment-images'
+
   # VPC in which containers will be networked.
   # It has two public subnets, and two private subnets.
   # We distribute the subnets across the first two available subnets
