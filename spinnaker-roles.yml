@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Setup AWS IAM roles for Spinnaker
+
+Resources:
+
+  SpinnakerDevInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: SpinnakerDevInstanceRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  SpinnakerDevInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+      - !Ref SpinnakerDevInstanceRole
+      InstanceProfileName: SpinnakerDevInstanceRole
+
+  SpinnakerDevInstancePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref SpinnakerDevInstanceRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Resource: !GetAtt SpinnakerManagedRole.Arn
+          - Action:
+            - "ec2:DescribeRegions"
+            - "ec2:DescribeAvailabilityZones"
+            Effect: Allow
+            Resource: "*"
+
+      PolicyName: SpinnakerDevInstanceAssumeManagedRole
+
+  SpinnakerManagedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: SpinnakerManaged
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt SpinnakerDevInstanceRole.Arn
+              Service:
+              # TODO: Remove the requirement to re-use the Spinnaker Managed Role for
+              # various ECS service roles (https://github.com/spinnaker/spinnaker/issues/3340).
+              - ecs-tasks.amazonaws.com
+              - application-autoscaling.amazonaws.com
+              - ecs.amazonaws.com
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+
+  SpinnakerManagedPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref SpinnakerManagedRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: iam:PassRole
+            Effect: Allow
+            Resource: !GetAtt SpinnakerManagedRole.Arn
+      PolicyName: SpinnakerPassRole
