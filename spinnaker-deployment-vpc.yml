@@ -16,7 +16,12 @@ Resources:
   Repo:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: 'spinnaker-deployment-images'
+      RepositoryName: spinnaker-deployment-images
+
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: spinnaker-deployment-cluster
 
   # VPC in which containers will be networked.
   # It has two public subnets, and two private subnets.
@@ -184,3 +189,30 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableTwo
       SubnetId: !Ref PrivateSubnetTwo
+
+Outputs:
+  VpcId:
+    Description: The ID of the VPC that this stack is deployed in
+    Value: !Ref 'VPC'
+    Export:
+      Name: !Sub ${AWS::StackName}:VpcId
+  PublicSubnetOne:
+    Description: Public subnet one
+    Value: !Ref 'PublicSubnetOne'
+    Export:
+      Name: !Sub ${AWS::StackName}:PublicSubnetOne
+  PublicSubnetTwo:
+    Description: Public subnet two
+    Value: !Ref 'PublicSubnetTwo'
+    Export:
+      Name: !Sub ${AWS::StackName}:PublicSubnetTwo
+  PrivateSubnetOne:
+    Description: Private subnet one
+    Value: !Ref 'PrivateSubnetOne'
+    Export:
+      Name: !Sub ${AWS::StackName}:PrivateSubnetOne
+  PrivateSubnetTwo:
+    Description: Private subnet two
+    Value: !Ref 'PrivateSubnetTwo'
+    Export:
+      Name: !Sub ${AWS::StackName}:PrivateSubnetTwo

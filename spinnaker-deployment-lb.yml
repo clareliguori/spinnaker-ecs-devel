@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: External, public facing load balancer, for forwarding public traffic to private containers
+Parameters:
+  VPCStackName:
+    Type: String
+    Default: SpinnakerVPC
+    Description: The name of the VPC stack to add this load balancer to
+
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref "AWS::StackName"
+      RetentionInDays: 30
+
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AWS::StackName}-private-access"
+      GroupDescription: Access to the Fargate containers
+      VpcId:
+        Fn::ImportValue: !Sub ${VPCStackName}:VpcId
+      SecurityGroupIngress:
+        Description: Ingress from the public ALB
+        IpProtocol: -1
+        SourceSecurityGroupId: !Ref 'PublicLoadBalancerSG'
+
+  # Public load balancer, hosted in public subnets that is accessible
+  # to the public, and is intended to route traffic to one or more public
+  # facing services. This is used for accepting traffic from the public
+  # internet and directing it to public facing microservices
+  PublicLoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AWS::StackName}-public-access"
+      GroupDescription: Access to the public facing load balancer
+      VpcId:
+        Fn::ImportValue: !Sub ${VPCStackName}:VpcId
+      SecurityGroupIngress:
+          # Allow access to ALB from anywhere on the internet
+          - CidrIp: 0.0.0.0/0
+            IpProtocol: -1
+
+  PublicLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${AWS::StackName}-lb"
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '30'
+      Subnets:
+        # The load balancer is placed into the public subnets, so that traffic
+        # from the internet can reach the load balancer directly via the internet gateway
+        - Fn::ImportValue: !Sub ${VPCStackName}:PublicSubnetOne
+        - Fn::ImportValue: !Sub ${VPCStackName}:PublicSubnetTwo
+      SecurityGroups: [!Ref 'PublicLoadBalancerSG']
+
+  # Create a listener on the load balancer for routing traffic to the target group
+  PublicLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn:
+      - PublicLoadBalancer
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref 'TargetGroup'
+          Type: 'forward'
+      LoadBalancerArn: !Ref 'PublicLoadBalancer'
+      Port: 80
+      Protocol: HTTP
+
+  # A target group. This is used for keeping track of all the tasks, and
+  # what IP addresses / port numbers they have.
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 6
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      TargetType: ip
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+      Name: !Sub "${AWS::StackName}-tg"
+      Port: 80 # The container must expose port 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId:
+        Fn::ImportValue: !Sub ${VPCStackName}:VpcId
+
+Outputs:
+  ExternalUrl:
+    Description: The url of the external load balancer
+    Value: !Sub http://${PublicLoadBalancer.DNSName}
+    Export:
+      Name: !Sub ${AWS::StackName}:ExternalUrl

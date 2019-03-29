@@ -1,5 +1,7 @@
 # Set up a Spinnaker ECS plugin development environment
 
+In this setup, Spinnaker runs on an EC2 instance.  Code is edited on the laptop and then synced to the EC2 instance for testing.
+
 <!-- toc -->
 
 - [Laptop](#configure-laptop)
@@ -86,6 +88,9 @@ hal config storage edit --type s3
 hal config version edit --version 1.13.0
 sudo hal deploy apply
 
+sudo service apache2 stop
+sudo systemctl disable apache2
+
 # Workaround: https://github.com/spinnaker/spinnaker/issues/4041
 echo > ~/.hal/default/profiles/settings-local.js
 
@@ -116,11 +121,14 @@ hal config provider docker-registry account add my-dockerhub-devel-acct \
 hal config provider docker-registry account add my-eu-central-1-devel-registry \
  --address 012345678910.dkr.ecr.eu-central-1.amazonaws.com \
  --username AWS \
- --password-command "aws --region eu-central-1 ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d | sed 's/^AWS://'"
+ --password-command "aws --region eu-central-1 ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d | sed 's/^AWS://'" \
+ --track-digests true
 
 # Deploy everything
 hal deploy apply
 ```
+
+Wait for Clouddriver to start up by checking the logs in ~/dev/spinnaker/logs/clouddriver.log.
 
 You should now be able to reach the Spinnaker interface at http://localhost:9000.
 
@@ -144,7 +152,7 @@ Login to the instance, deploy the changes, and check for build or service failur
 ssh -A -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance
 
 hal deploy apply
-(or for individual service changes: hal deploy apply --service-names clouddriver)
+(or for individual service changes: hal deploy apply --service-names=clouddriver,deck)
 
 cd ~/dev/spinnaker/logs
 ```
