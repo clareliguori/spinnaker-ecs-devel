@@ -130,7 +130,7 @@ hal deploy apply
 
 Wait for Clouddriver to start up by checking the logs in ~/dev/spinnaker/logs/clouddriver.log.
 
-You should now be able to reach the Spinnaker interface at http://localhost:9000.
+You should now be able to reach the Spinnaker interface at http://localhost:9000.  See [DEMO.md](DEMO.md) for instructions on how to create a sample Spinnaker pipeline.
 
 ## Test Spinnaker code changes
 
