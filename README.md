@@ -119,7 +119,7 @@ hal config provider docker-registry account add my-dockerhub-devel-acct \
     --track-digests true
 
 hal config provider docker-registry account add my-eu-central-1-devel-registry \
- --address 012345678910.dkr.ecr.eu-central-1.amazonaws.com \
+ --address 123456789012.dkr.ecr.eu-central-1.amazonaws.com \
  --username AWS \
  --password-command "aws --region eu-central-1 ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d | sed 's/^AWS://'" \
  --track-digests true

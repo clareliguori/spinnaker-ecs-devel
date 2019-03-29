@@ -1,0 +1,97 @@
+{
+    "isNew": true,
+    "stages": [
+      {
+        "clusters": [
+          {
+            "account": "ecs-my-aws-devel-acct",
+            "application": "aws",
+            "associatePublicIpAddress": false,
+            "availabilityZones": {
+              "eu-central-1": [
+                "eu-central-1a",
+                "eu-central-1b",
+                "eu-central-1c"
+              ]
+            },
+            "capacity": {
+              "desired": 3,
+              "max": 6,
+              "min": 2
+            },
+            "cloudProvider": "ecs",
+            "computeUnits": 256,
+            "containerPort": 80,
+            "copySourceScalingPoliciesAndActions": false,
+            "delayBeforeDisableSec": 0,
+            "delayBeforeScaleDownSec": 0,
+            "dockerImageCredentialsSecret": "None (No registry credentials)",
+            "dockerLabels": {},
+            "ecsClusterName": "spinnaker-deployment-cluster",
+            "environmentVariables": {
+              "PORT": "80"
+            },
+            "freeFormDetails": "ecsdemo",
+            "healthCheckGracePeriodSeconds": 5,
+            "healthCheckType": "EC2",
+            "iamRole": "None (No IAM role)",
+            "imageDescription": {
+              "account": "my-eu-central-1-devel-registry",
+              "fromTrigger": true,
+              "imageId": "123456789012.dkr.ecr.eu-central-1.amazonaws.com/spinnaker-deployment-images:*",
+              "registry": "123456789012.dkr.ecr.eu-central-1.amazonaws.com",
+              "repository": "spinnaker-deployment-images",
+              "tag": "*"
+            },
+            "launchType": "FARGATE",
+            "loadBalancers": [],
+            "logDriver": "awslogs",
+            "logOptions": {
+              "awslogs-group": "spinnaker-ecs-demo",
+              "awslogs-region": "eu-central-1",
+              "awslogs-stream-prefix": "spinnaker"
+            },
+            "maxRemainingAsgs": 2,
+            "moniker": {
+              "app": "aws",
+              "detail": "ecsdemo",
+              "stack": "prod"
+            },
+            "networkMode": "awsvpc",
+            "placementStrategyName": "",
+            "placementStrategySequence": [],
+            "provider": "ecs",
+            "reservedMemory": 512,
+            "rollback": {
+              "onFailure": true
+            },
+            "scaleDown": true,
+            "securityGroupNames": [
+              "spinnaker-ecs-demo-private-access"
+            ],
+            "securityGroups": [],
+            "stack": "prod",
+            "strategy": "redblack",
+            "subnetType": "private-subnet",
+            "targetGroup": "spinnaker-ecs-demo-tg",
+            "useSourceCapacity": false
+          }
+        ],
+        "name": "Deploy",
+        "refId": "1",
+        "requisiteStageRefIds": [],
+        "type": "deploy"
+      }
+    ],
+    "triggers": [
+      {
+        "account": "my-eu-central-1-devel-registry",
+        "enabled": true,
+        "registry": "123456789012.dkr.ecr.eu-central-1.amazonaws.com",
+        "repository": "spinnaker-deployment-images",
+        "tag": "*",
+        "type": "docker"
+      }
+    ],
+    "updateTs": "1553830506000"
+  }
