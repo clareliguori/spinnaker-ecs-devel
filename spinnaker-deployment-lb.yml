@@ -90,6 +90,19 @@ Resources:
       VpcId:
         Fn::ImportValue: !Sub ${VPCStackName}:VpcId
 
+  ServiceDiscoveryRecord:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      Name: !Sub "${AWS::StackName}-svc"
+      DnsConfig:
+        NamespaceId:
+          Fn::ImportValue: !Sub ${VPCStackName}:ServiceDiscoveryNamespace
+        DnsRecords:
+          - Type: A
+            TTL: 300
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
 Outputs:
   ExternalUrl:
     Description: The url of the external load balancer

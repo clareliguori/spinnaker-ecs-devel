@@ -190,6 +190,12 @@ Resources:
       RouteTableId: !Ref PrivateRouteTableTwo
       SubnetId: !Ref PrivateSubnetTwo
 
+  ServiceDiscoveryNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Vpc: !Ref 'VPC'
+      Name: Spinnaker
+
 Outputs:
   VpcId:
     Description: The ID of the VPC that this stack is deployed in
@@ -216,3 +222,8 @@ Outputs:
     Value: !Ref 'PrivateSubnetTwo'
     Export:
       Name: !Sub ${AWS::StackName}:PrivateSubnetTwo
+  ServiceDiscoveryNamespace:
+    Description: Cloud Map namespace
+    Value: !Ref ServiceDiscoveryNamespace
+    Export:
+      Name: !Sub ${AWS::StackName}:ServiceDiscoveryNamespace
