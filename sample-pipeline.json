@@ -38,10 +38,10 @@
             "imageDescription": {
               "account": "my-eu-central-1-devel-registry",
               "fromTrigger": true,
-              "imageId": "123456789012.dkr.ecr.eu-central-1.amazonaws.com/spinnaker-deployment-images:*",
+              "imageId": "123456789012.dkr.ecr.eu-central-1.amazonaws.com/spinnaker-deployment-images (Tag resolved at runtime)",
               "registry": "123456789012.dkr.ecr.eu-central-1.amazonaws.com",
               "repository": "spinnaker-deployment-images",
-              "tag": "*"
+              "tag": ""
             },
             "launchType": "FARGATE",
             "loadBalancers": [],
@@ -89,7 +89,7 @@
         "enabled": true,
         "registry": "123456789012.dkr.ecr.eu-central-1.amazonaws.com",
         "repository": "spinnaker-deployment-images",
-        "tag": "*",
+        "tag": "",
         "type": "docker"
       }
     ],
