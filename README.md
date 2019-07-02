@@ -171,3 +171,21 @@ sync-from-upstream() {
 ```
 
 Then regularly run `sync-from-upstream` in ~/code/spinnaker to keep your local repos and GitHub forks in sync with upstream Spinnaker.
+
+## Local development with `spinnaker/deck`
+
+To expedite development of [deck](https://github.com/spinnaker/deck) (or to add ad-hoc console.log statements for debugging), it's possible to run the app on your local machine and connect to the services on your development instance over SSH. 
+
+1. After forking and pulling down `deck` locally, install dependencies with `yarn` (see [README](https://github.com/spinnaker/deck/blob/master/README.adoc))
+
+2. Run `deck` with `yarn run start` 
+    * Windows users can circumvent the bash start up script by running it directly with **npm**: `npm run start-dev-server`
+
+3. Open separate terminal and SSH into your development instance:
+```
+ssh -A -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance [-i MY_SSH_KEY]
+```
+
+4. Access local deck on `localhost:9000`. Changes made & saved to your local app will prompt the app to refresh.
+
+NOTE: feature flags that would be set as environment variables on your development instance can be manually turned on/off in local deck by setting them in [`settings.js`](https://github.com/spinnaker/deck/blob/master/settings.js).
