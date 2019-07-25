@@ -5,6 +5,13 @@ Parameters:
     Type: String
     Default: SpinnakerVPC
     Description: The name of the VPC stack to add this load balancer to
+  LBTargetType:
+    Type: String
+    Default: ip
+    AllowedValues:
+      - ip
+      - instance
+    Description: Target type for the load balancer. Choose 'ip' for Fargate tasks, choose 'instance' for EC2 tasks.
 
 Resources:
   LogGroup:
@@ -79,7 +86,7 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
-      TargetType: ip
+      TargetType: !Ref 'LBTargetType'
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: 30
@@ -109,3 +116,8 @@ Outputs:
     Value: !Sub http://${PublicLoadBalancer.DNSName}
     Export:
       Name: !Sub ${AWS::StackName}:ExternalUrl
+  ContainerSecurityGroup:
+    Description: The security group ID for the containers
+    Value: !Ref ContainerSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}:ContainerSecurityGroup

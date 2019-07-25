@@ -96,3 +96,41 @@ Resources:
                   - ecs.application-autoscaling.amazonaws.com
                   - ecs.amazonaws.com
       PolicyName: SpinnakerPassRole
+
+  ECSContainerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [!Ref 'ECSContainerInstanceRole']
+      InstanceProfileName: SpinnakerECSContainerInstances
+
+  ECSContainerInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: SpinnakerECSContainerInstances
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ec2.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: ecs-service
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              - 'ecs:CreateCluster'
+              - 'ecs:DeregisterContainerInstance'
+              - 'ecs:DiscoverPollEndpoint'
+              - 'ecs:Poll'
+              - 'ecs:RegisterContainerInstance'
+              - 'ecs:StartTelemetrySession'
+              - 'ecs:Submit*'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+              - 'ecr:GetAuthorizationToken'
+              - 'ecr:BatchGetImage'
+              - 'ecr:GetDownloadUrlForLayer'
+            Resource: '*'
