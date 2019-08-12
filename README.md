@@ -100,7 +100,7 @@ hal config version edit --version branch:master
 
 # Connect your AWS and ECS accounts
 hal config provider aws account add my-aws-devel-acct \
-    --account-id 123456789012 \
+    --account-id {your-aws-account-id} \
     --assume-role role/SpinnakerManaged
 hal config provider aws account edit my-aws-devel-acct --regions eu-central-1
 hal config provider aws enable
@@ -118,8 +118,9 @@ hal config provider docker-registry account add my-dockerhub-devel-acct \
     --password \
     --track-digests true
 
+# Your ECR repository uri will look something like this: 123456789012.dkr.ecr.eu-central-1.amazonaws.com
 hal config provider docker-registry account add my-eu-central-1-devel-registry \
- --address 123456789012.dkr.ecr.eu-central-1.amazonaws.com \
+ --address {your-ecr-repository-uri} \
  --username AWS \
  --password-command "aws --region eu-central-1 ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d | sed 's/^AWS://'" \
  --track-digests true
