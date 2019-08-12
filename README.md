@@ -41,7 +41,7 @@ Provision some roles for Spinnaker:
 
 ```aws cloudformation deploy --template-file spinnaker-roles.yml --region us-west-2 --stack-name SpinnakerRoles --capabilities CAPABILITY_NAMED_IAM```
 
-In the default VPC, create a security group named "SpinnakerDev", allowing port 22 inbound for a restricted set of IPs (for example, corporate firewall ranges).  Then, provision a development instance:
+In the AWS console, [create a key pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair). In the default VPC, [create a security group](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#CreatingSecurityGroups) named "SpinnakerDev" and [add a rule](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#AddRemoveRules) allowing port 22 inbound for a restricted set of IPs (for example, corporate firewall ranges). Then, provision a development instance:
 
 ```
 key_pair_name="{ec2 key name}"
@@ -57,12 +57,12 @@ aws cloudformation deploy --template-file spinnaker-dev-instance.yml --region us
 
 ## Configure development EC2 instance
 
-Get your instance's DNS name and login via SSH:
+Get your instance's DNS name and [login via SSH](https://docs.aws.amazon.com/quickstarts/latest/vmlaunch/step-2-connect-to-instance.html):
 
 ```
 spinnaker_instance=`aws cloudformation describe-stacks --region us-west-2 --stack-name SpinnakerDevInstance --query 'Stacks[0].Outputs[0].OutputValue' --output text`
 
-ssh -A -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance
+ssh -A -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance -i /path/to/my-key-pair.pem
 ```
 
 Follow the GitHub instructions to [generate a new SSH key](https://help.github.com/en/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) on the Spinnaker instance and [add it to your GitHub account](https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account).
@@ -147,9 +147,9 @@ Optional:
 ssh ubuntu@$spinnaker_instance 'for i in ~/dev/spinnaker/*; do (cd $i && echo $i && git checkout master && git clean -fdx); done'
 ```
 
-Login to the instance, deploy the changes, and check for build or service failures:
+[Login to the instance](https://docs.aws.amazon.com/quickstarts/latest/vmlaunch/step-2-connect-to-instance.html), deploy the changes, and check for build or service failures:
 ```
-ssh -A -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance
+ssh -A -L 9000:localhost:9000 -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance -i /path/to/my-key-pair.pem
 
 hal deploy apply
 (or for individual service changes: hal deploy apply --service-names=clouddriver,deck)
@@ -181,9 +181,9 @@ To expedite development of [deck](https://github.com/spinnaker/deck) (or to add 
 2. Run `deck` with `yarn run start` 
     * Windows users can circumvent the bash start up script by running it directly with **npm**: `npm run start-dev-server`
 
-3. Open separate terminal and SSH into your development instance:
+3. Open separate terminal and [SSH into your development instance](https://docs.aws.amazon.com/quickstarts/latest/vmlaunch/step-2-connect-to-instance.html):
 ```
-ssh -A -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance [-i MY_SSH_KEY]
+ssh -A -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance -i /path/to/my-key-pair.pem
 ```
 
 4. Access local deck on `localhost:9000`. Changes made & saved to your local app will prompt the app to refresh.
