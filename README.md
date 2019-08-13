@@ -81,7 +81,7 @@ source ~/.bashrc
 hal -v
 ```
 
-Configure and deploy the Spinnaker installation: 
+Configure and deploy the Spinnaker installation:
 ```
 # Store state in S3 and deploy a recent stable version
 hal config storage s3 edit --region us-west-2
@@ -120,7 +120,7 @@ hal config provider docker-registry account add my-dockerhub-devel-acct \
     --password \
     --track-digests true
 
-// Replace the address specified below (123456789012.dkr.ecr.eu-central-1.amazonaws.com) with the address to your own ecr repository. 
+// Replace the address specified below (123456789012.dkr.ecr.eu-central-1.amazonaws.com) with the address to your own ecr repository.
 hal config provider docker-registry account add my-eu-central-1-devel-registry \
  --address 123456789012.dkr.ecr.eu-central-1.amazonaws.com \
  --username AWS \
@@ -144,7 +144,7 @@ spinnaker_instance=`aws cloudformation describe-stacks --region us-west-2 --stac
 
 Sync your changes to the development instance:
 ```
-rsync --progress -a -e "ssh -i /path/to/my-key-pair.pem" ~/code/spinnaker/ ubuntu@$spinnaker_instance:/home/ubuntu/dev/spinnaker 
+rsync --progress -a -e "ssh -i /path/to/my-key-pair.pem" --exclude='*/build/' --exclude='*/.idea/' --exclude='*/out/' --exclude='*/.gradle/' ~/code/spinnaker/ ubuntu@$spinnaker_instance:/home/ubuntu/dev/spinnaker
 
 Optional:
 ssh ubuntu@$spinnaker_instance 'for i in ~/dev/spinnaker/*; do (cd $i && echo $i && git checkout master && git clean -fdx); done'
@@ -177,11 +177,11 @@ Then regularly run `sync-from-upstream` in ~/code/spinnaker to keep your local r
 
 ## Local development with `spinnaker/deck`
 
-To expedite development of [deck](https://github.com/spinnaker/deck) (or to add ad-hoc console.log statements for debugging), it's possible to run the app on your local machine and connect to the services on your development instance over SSH. 
+To expedite development of [deck](https://github.com/spinnaker/deck) (or to add ad-hoc console.log statements for debugging), it's possible to run the app on your local machine and connect to the services on your development instance over SSH.
 
 1. After forking and pulling down `deck` locally, install dependencies with `yarn` (see [README](https://github.com/spinnaker/deck/blob/master/README.adoc))
 
-2. Run `deck` with `yarn run start` 
+2. Run `deck` with `yarn run start`
     * Windows users can circumvent the bash start up script by running it directly with **npm**: `npm run start-dev-server`
 
 3. Open separate terminal and [SSH into your development instance](https://docs.aws.amazon.com/quickstarts/latest/vmlaunch/step-2-connect-to-instance.html):
