@@ -10,6 +10,7 @@ In this setup, Spinnaker runs on an EC2 instance.  Code is edited on the laptop 
 - [Development Instance](#configure-development-ec2-instance)
 - [Test Changes](#test-spinnaker-code-changes)
 - [Sync From Upstream](#regularly-sync-from-upstream)
+- [Troubleshooting Common Issues](#troubleshooting)
 
 <!-- tocstop -->
 
@@ -80,13 +81,13 @@ source ~/.bashrc
 hal -v
 ```
 
-Configure and deploy the Spinnaker installation:
+Configure and deploy the Spinnaker installation: 
 ```
 # Store state in S3 and deploy a recent stable version
 hal config storage s3 edit --region us-west-2
 hal config storage edit --type s3
 hal config version edit --version 1.13.0
-sudo hal deploy apply
+hal deploy apply (if this does not work, try `sudo hal deploy apply`)
 
 sudo service apache2 stop
 sudo systemctl disable apache2
@@ -99,8 +100,9 @@ hal config deploy edit --type localgit --git-origin-user={your github username}
 hal config version edit --version branch:master
 
 # Connect your AWS and ECS accounts
+// Replace the account id specified below (123456789012) with your own account id.
 hal config provider aws account add my-aws-devel-acct \
-    --account-id {your-aws-account-id} \
+    --account-id 123456789012 \
     --assume-role role/SpinnakerManaged
 hal config provider aws account edit my-aws-devel-acct --regions eu-central-1
 hal config provider aws enable
@@ -118,20 +120,20 @@ hal config provider docker-registry account add my-dockerhub-devel-acct \
     --password \
     --track-digests true
 
-# Your ECR repository uri will look something like this: 123456789012.dkr.ecr.eu-central-1.amazonaws.com
+// Replace the address specified below (123456789012.dkr.ecr.eu-central-1.amazonaws.com) with the address to your own ecr repository. 
 hal config provider docker-registry account add my-eu-central-1-devel-registry \
- --address {your-ecr-repository-uri} \
+ --address 123456789012.dkr.ecr.eu-central-1.amazonaws.com \
  --username AWS \
  --password-command "aws --region eu-central-1 ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d | sed 's/^AWS://'" \
  --track-digests true
 
 # Deploy everything
-hal deploy apply
+hal deploy apply (if you used `sudo hal deploy apply` to start spinnaker, then you should use `sudo hal deploy apply` here as well)
 ```
 
 Wait for Clouddriver to start up by checking the logs in ~/dev/spinnaker/logs/clouddriver.log.
 
-You should now be able to reach the Spinnaker interface at http://localhost:9000.  See [DEMO.md](DEMO.md) for instructions on how to create a sample Spinnaker pipeline.
+You should now be able to reach the Spinnaker interface at http://localhost:9000. See [DEMO.md](DEMO.md) for instructions on how to create a sample Spinnaker pipeline.
 
 ## Test Spinnaker code changes
 
@@ -142,7 +144,7 @@ spinnaker_instance=`aws cloudformation describe-stacks --region us-west-2 --stac
 
 Sync your changes to the development instance:
 ```
-rsync --progress -a ~/code/spinnaker/ ubuntu@$spinnaker_instance:/home/ubuntu/dev/spinnaker
+rsync --progress -a ~/code/spinnaker/ ubuntu@$spinnaker_instance:/home/ubuntu/dev/spinnaker -i /path/to/my-key-pair.pem
 
 Optional:
 ssh ubuntu@$spinnaker_instance 'for i in ~/dev/spinnaker/*; do (cd $i && echo $i && git checkout master && git clean -fdx); done'
@@ -190,3 +192,7 @@ ssh -A -L 8084:localhost:8084 -L 8087:localhost:8087 ubuntu@$spinnaker_instance 
 4. Access local deck on `localhost:9000`. Changes made & saved to your local app will prompt the app to refresh.
 
 NOTE: feature flags that would be set as environment variables on your development instance can be manually turned on/off in local deck by setting them in [`settings.js`](https://github.com/spinnaker/deck/blob/master/settings.js).
+
+## Troubleshooting
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for instructions on how to debug common issues.
