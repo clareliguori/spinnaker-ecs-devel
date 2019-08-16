@@ -144,7 +144,7 @@ spinnaker_instance=`aws cloudformation describe-stacks --region us-west-2 --stac
 
 Sync your changes to the development instance:
 ```
-rsync --progress -a ~/code/spinnaker/ ubuntu@$spinnaker_instance:/home/ubuntu/dev/spinnaker -i /path/to/my-key-pair.pem
+rsync --progress -a -e "ssh -i /path/to/my-key-pair.pem" ~/code/spinnaker/ ubuntu@$spinnaker_instance:/home/ubuntu/dev/spinnaker 
 
 Optional:
 ssh ubuntu@$spinnaker_instance 'for i in ~/dev/spinnaker/*; do (cd $i && echo $i && git checkout master && git clean -fdx); done'
