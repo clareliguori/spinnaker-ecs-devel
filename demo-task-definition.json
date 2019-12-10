@@ -19,6 +19,12 @@
           "containerPort": 80
         }
       ],
+      "environment": [
+        {
+          "name": "PORT",
+          "value": "80"
+        }
+      ],
       "cpu": 256,
       "memoryReservation": 512,
       "essential": true
