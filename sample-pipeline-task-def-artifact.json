@@ -1,0 +1,125 @@
+{
+  "isNew": true,
+  "expectedArtifacts": [
+    {
+      "defaultArtifact": {
+        "artifactAccount": "my-github",
+        "id": "777864a8-1c3a-4df2-8933-bd47071c3824",
+        "name": "demo-task-definition.json",
+        "reference": "https://api.github.com/repos/clareliguori/spinnaker-ecs-devel/contents/demo-task-definition.json",
+        "type": "github/file",
+        "version": "master"
+      },
+      "displayName": "spinnaker-ecs-demo-artifact",
+      "id": "3df36a4c-0720-4d45-a115-4e967189f39f",
+      "matchArtifact": {
+        "artifactAccount": "my-github",
+        "id": "8a57a510-2332-4869-9771-0ba94e19b0d7",
+        "name": "demo-task-definition.json",
+        "type": "github/file"
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": false
+    }
+  ],
+  "lastModifiedBy": "anonymous",
+  "stages": [
+    {
+      "clusters": [
+        {
+          "account": "ecs-my-aws-devel-acct",
+          "application": "aws",
+          "associatePublicIpAddress": false,
+          "availabilityZones": {
+            "eu-central-1": [
+              "eu-central-1a",
+              "eu-central-1b",
+              "eu-central-1c"
+            ]
+          },
+          "capacity": {
+            "desired": 3,
+            "max": 2,
+            "min": 6
+          },
+          "cloudProvider": "ecs",
+          "containerMappings": [
+            {
+              "containerName": "main",
+              "imageDescription": {
+                "account": "my-eu-central-1-devel-registry",
+                "fromTrigger": true,
+                "imageId": "123456789012.dkr.ecr.eu-central-1.amazonaws.com/spinnaker-deployment-images (Tag resolved at runtime)",
+                "registry": "123456789012.dkr.ecr.eu-central-1.amazonaws.com",
+                "repository": "spinnaker-deployment-images",
+                "tag": ""
+              }
+            }
+          ],
+          "containerPort": 80,
+          "copySourceScalingPoliciesAndActions": false,
+          "delayBeforeDisableSec": 0,
+          "delayBeforeScaleDownSec": 0,
+          "dockerImageCredentialsSecret": "None (No registry credentials)",
+          "dockerLabels": {},
+          "ecsClusterName": "spinnaker-deployment-cluster",
+          "environmentVariables": {},
+          "freeFormDetails": "ecsdemoartifact",
+          "healthCheckGracePeriodSeconds": 5,
+          "healthCheckType": "EC2",
+          "iamRole": "None (No IAM role)",
+          "launchType": "FARGATE",
+          "loadBalancedContainer": "main",
+          "loadBalancers": [],
+          "maxRemainingAsgs": 2,
+          "moniker": {
+            "app": "aws",
+            "detail": "ecsdemoartifact",
+            "stack": "prod"
+          },
+          "networkMode": "awsvpc",
+          "placementConstraints": [],
+          "placementStrategyName": "",
+          "placementStrategySequence": [],
+          "provider": "ecs",
+          "rollback": {
+            "onFailure": true
+          },
+          "scaleDown": true,
+          "securityGroupNames": [
+            "spinnaker-ecs-demo-private-access"
+          ],
+          "securityGroups": [],
+          "serviceDiscoveryAssociations": [],
+          "stack": "prod",
+          "strategy": "redblack",
+          "subnetType": "private-subnet",
+          "tags": {},
+          "targetGroup": "spinnaker-ecs-demo-artifacts-tg",
+          "taskDefinitionArtifact": {
+            "artifactId": "3df36a4c-0720-4d45-a115-4e967189f39f"
+          },
+          "taskDefinitionArtifactAccount": "my-github",
+          "useSourceCapacity": false,
+          "useTaskDefinitionArtifact": true
+        }
+      ],
+      "name": "Deploy",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "deploy"
+    }
+  ],
+  "triggers": [
+    {
+      "account": "my-eu-central-1-devel-registry",
+      "description": "(Docker Registry) my-eu-central-1-devel-registry: spinnaker-deployment-images",
+      "enabled": true,
+      "registry": "123456789012.dkr.ecr.eu-central-1.amazonaws.com",
+      "repository": "spinnaker-deployment-images",
+      "tag": "",
+      "type": "docker"
+    }
+  ],
+  "updateTs": "1575935697000"
+}

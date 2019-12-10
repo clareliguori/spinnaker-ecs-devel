@@ -32,6 +32,22 @@ When the deployment completes, load the webpage:
 
 ```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-demo --query 'Stacks[0].Outputs[0].OutputValue' --output text```
 
+# Sample Fargate application (using task definition artifacts)
+
+Follow the Spinnaker instructions for registering your GitHub account in Spinnaker. with the account name 'my-github': https://www.spinnaker.io/setup/artifacts/github/
+
+After setting up a Spinnaker development environment and a deployment region, create the infrastructure (LBs, security groups, etc) for a new ECS service.  In this example, the deployment region is eu-central-1.
+
+```aws cloudformation deploy --template-file spinnaker-deployment-lb.yml --region eu-central-1 --stack-name spinnaker-ecs-demo-artifacts```
+
+Go to http://localhost:9000/#/applications/aws/executions and create a new pipeline named "ecs-demo-artifacts".  Go to Pipeline Actions -> Edit as JSON, and paste in the contents of sample-pipeline-task-def-artifact.json.  Click Save Changes.
+
+Go back to the Executions page, and click "Start Manual Execution".  Choose one of the tags to deploy.
+
+When the deployment completes, load the webpage:
+
+```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-demo-artifacts --query 'Stacks[0].Outputs[0].OutputValue' --output text```
+
 # Sample EC2 application
 
 After setting up a Spinnaker development environment and a deployment region, create the infrastructure (LBs, security groups, etc) for a new ECS service.  In this example, the deployment region is eu-central-1.
