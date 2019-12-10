@@ -30,7 +30,7 @@ Go back to the Executions page, and click "Start Manual Execution".  Choose one 
 
 When the deployment completes, load the webpage:
 
-```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-demo --query 'Stacks[0].Outputs[0].OutputValue' --output text```
+```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-demo --query 'Stacks[0].Outputs[?OutputKey==`ExternalUrl`].OutputValue' --output text```
 
 # Sample Fargate application (using task definition artifacts)
 
@@ -46,7 +46,7 @@ Go back to the Executions page, and click "Start Manual Execution".  Choose one 
 
 When the deployment completes, load the webpage:
 
-```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-demo-artifacts --query 'Stacks[0].Outputs[0].OutputValue' --output text```
+```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-demo-artifacts --query 'Stacks[0].Outputs[?OutputKey==`ExternalUrl`].OutputValue' --output text```
 
 # Sample EC2 application
 
@@ -64,4 +64,4 @@ Go back to the Executions page, and click "Start Manual Execution".  Choose one 
 
 When the deployment completes, load the webpage:
 
-```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-ec2-demo --query 'Stacks[0].Outputs[0].OutputValue' --output text```
+```aws cloudformation describe-stacks --region eu-central-1 --stack-name spinnaker-ecs-ec2-demo --query 'Stacks[0].Outputs[?OutputKey==`ExternalUrl`].OutputValue' --output text```
