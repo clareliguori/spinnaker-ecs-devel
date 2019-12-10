@@ -87,7 +87,7 @@
           },
           "scaleDown": true,
           "securityGroupNames": [
-            "spinnaker-ecs-demo-private-access"
+            "spinnaker-ecs-demo-artifacts-private-access"
           ],
           "securityGroups": [],
           "serviceDiscoveryAssociations": [],
