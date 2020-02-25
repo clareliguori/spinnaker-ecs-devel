@@ -17,7 +17,9 @@ Resources:
           Action:
           - sts:AssumeRole
       ManagedPolicyArns:
+        # Store Spinnaker state like pipeline definitions in S3
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        # Enable Docker registry triggers
         - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
 
   SpinnakerDevInstanceProfile:
@@ -43,7 +45,6 @@ Resources:
             - "ec2:DescribeAvailabilityZones"
             Effect: Allow
             Resource: "*"
-
       PolicyName: SpinnakerDevInstanceAssumeManagedRole
 
   SpinnakerManagedRole:
@@ -58,14 +59,15 @@ Resources:
             Principal:
               AWS: !GetAtt SpinnakerDevInstanceRole.Arn
               Service:
-              # TODO: Remove the requirement to re-use the Spinnaker Managed Role for
-              # various ECS service roles (https://github.com/spinnaker/spinnaker/issues/3340).
+              # Re-use the Spinnaker-managed role as the ECS task execution role
               - ecs-tasks.amazonaws.com
-              - application-autoscaling.amazonaws.com
-              - ecs.amazonaws.com
         Version: '2012-10-17'
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/PowerUserAccess
+        # Enable describing the account and doing ECS deployments
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonECS_FullAccess
+        # Re-use the Spinnaker-managed role as the ECS task execution role
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
 
   SpinnakerManagedPolicy:
     Type: AWS::IAM::Policy
@@ -75,27 +77,33 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
+          # Re-use the Spinnaker-managed role as the ECS task execution role
           - Action: iam:PassRole
             Effect: Allow
             Resource:
               - !GetAtt SpinnakerManagedRole.Arn
-              - "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS"
             Condition:
               StringLike:
                 "iam:PassedToService":
-                  - application-autoscaling.amazonaws.com
-                  - ec2.amazonaws.com
                   - ecs-tasks.amazonaws.com
-                  - ecs.amazonaws.com
-          - Action: iam:CreateServiceLinkedRole
-            Effect: Allow
-            Resource: "*"
-            Condition:
-              StringLike:
-                "iam:AWSServiceName":
-                  - ecs.application-autoscaling.amazonaws.com
-                  - ecs.amazonaws.com
       PolicyName: SpinnakerPassRole
+
+  TaskExecutionSecretsPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        # Re-use the Spinnaker-managed role as the ECS task execution role
+        - !Ref SpinnakerManagedRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - "kms:Decrypt"
+              - "secretsmanager:GetSecretValue"
+              - "ssm:GetParameters"
+            Effect: Allow
+            Resource: '*'
+      PolicyName: SpinnakerSecretsAccess
 
   ECSContainerInstanceProfile:
     Type: AWS::IAM::InstanceProfile
